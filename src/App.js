@@ -5,8 +5,6 @@ import ReactMapGL, { Marker } from 'react-map-gl'
 
 import Dropdown from './components/Dropdown'
 
-import point from './assets/img/pharmacy-location-pointer.png'
-
 import './global.css'
 
 const conveniosJSON = require('./assets/convenio.json')
