@@ -1,5 +1,5 @@
 import React from 'react';
-// import axios from 'axios';
+import axios from 'axios';
 import { FiMenu, FiX, FiMapPin } from 'react-icons/fi'
 import ReactMapGL, { Marker } from 'react-map-gl'
 
@@ -7,7 +7,7 @@ import Dropdown from './components/Dropdown'
 
 import './global.css'
 
-const conveniosJSON = require('./assets/convenio.json')
+// const conveniosJSON = require('./assets/convenio.json')
 const planosJSON = require('./assets/planos.json')
 const atendimentoJSON = require('./assets/atendimento.json')
 const mapEntriesJSON = require('./assets/map_entries.json')
@@ -49,21 +49,41 @@ class App extends React.Component {
 
   }
 
+  test = async () => {
+
+    const settings = {
+      "async": true,
+      "crossDomain": true,
+      "headers": {
+        "authorization": "Token token=20a2e2b8372e5a688f7610c5f4c3e355"
+      }
+    }
+    
+    await axios.get("https://www.cepaberto.com/api/v3/cep?cep=01001000", settings).then(response => {
+    
+      console.log(response)
+    
+    })
+
+  }
+
   setConvenios = async () => {
 
-    // const convenios = await axios.get('https://api-portoseg.sensedia.com/quotation/v1/itens', (response) => {
+    const convenios = await axios.get('https://medicoradas-api.herokuapp.com/convenio', (response) => {
 
-    //   return response
+      return response
 
-    // })
+    })
+
+    // console.log(convenios)
 
     this.setState({
 
-      convenio: conveniosJSON.map(item => {
+      convenio: convenios.data.map(item => {
 
         return {
-          id: item.registro_ans,
-          value: item.razao_social
+          id: item.registroAns,
+          value: item.nomeFantasia
         }
 
       }),
@@ -251,7 +271,7 @@ class App extends React.Component {
             
             } */}
 
-            {/* <button className="btn-sub" onClick={() => this.setCoordinates()}>Enviar</button> */}
+            <button className="btn-sub" onClick={() => this.test()}>Enviar</button>
 
             <div className="map-view-button" id="map-view-button">
 

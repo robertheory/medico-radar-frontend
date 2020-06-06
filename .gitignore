@@ -4,7 +4,9 @@
 /node_modules
 /.pnp
 .pnp.js
-
+/src/assets/cep
+/src/config/*
+!/src/config/.gitkeep
 # testing
 /coverage
 
