@@ -10,7 +10,7 @@ export default function Dropdown(props) {
 
             {props.data.map(item => (
 
-                <option key={item.id} value={item.id}>{item.value}</option>
+                <option key={item.id + item.value} value={item.id}>{item.value}</option>
 
             ))}
 

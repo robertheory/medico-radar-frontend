@@ -2,15 +2,12 @@ import React from 'react';
 import axios from 'axios';
 import { FiMenu, FiX, FiMapPin } from 'react-icons/fi'
 import ReactMapGL, { Marker } from 'react-map-gl'
+import mapConfig from './config/map.json'
 
 import Dropdown from './components/Dropdown'
+import SearchForm from './components/SearchForm'
 
 import './global.css'
-
-// const conveniosJSON = require('./assets/convenio.json')
-const planosJSON = require('./assets/planos.json')
-const atendimentoJSON = require('./assets/atendimento.json')
-const mapEntriesJSON = require('./assets/map_entries.json')
 
 const sateliteStyle = "mapbox://styles/doravantebeto/ckan9j9bz0omy1ipdb6b1oizn"
 const darkStyle = "mapbox://styles/doravantebeto/ckan9ggs7124u1iqlreo3hoe5"
@@ -30,40 +27,22 @@ class App extends React.Component {
 
   state = {
 
+    registroANS: '',
     convenio: [],
     plano: [],
-    atendimento: [],
-    estabelecimento: null,
+    estabelecimento: [],
     viewport: {
       latitude: 45.4211,
       longitude: -75.6903,
       width: "100%",
       height: "100%",
-      zoom: 10,
-      mapboxApiAccessToken: "pk.eyJ1IjoiZG9yYXZhbnRlYmV0byIsImEiOiJja2FuOHhwbGMwMXc0MnhvNmY2ZHg4eWhmIn0.892Y-QNZxyxAM90blvN5kw"
+      zoom: 15,
+      mapboxApiAccessToken: mapConfig.mapToken     
 
     },
     mapStyleMode: lightStyle,
     pointers: [],
     results: ''
-
-  }
-
-  test = async () => {
-
-    const settings = {
-      "async": true,
-      "crossDomain": true,
-      "headers": {
-        "authorization": "Token token=20a2e2b8372e5a688f7610c5f4c3e355"
-      }
-    }
-    
-    await axios.get("https://www.cepaberto.com/api/v3/cep?cep=01001000", settings).then(response => {
-    
-      console.log(response)
-    
-    })
 
   }
 
@@ -88,7 +67,8 @@ class App extends React.Component {
 
       }),
       plano: [],
-      atendimento: []
+      atendimento: [],
+      registroANS: ''
 
     })
 
@@ -96,45 +76,26 @@ class App extends React.Component {
 
   setPlano = async (id) => {
 
-    // const convenios = await axios.get('https://api-portoseg.sensedia.com/quotation/v1/itens', (response) => {
+    const planos = await axios.get(`https://medicoradas-api.herokuapp.com/convenio/${id}/planos`, (response) => {
 
-    //   return response
-
-    // })
-
-    this.setState({
-      plano: planosJSON.filter(plano => plano.registro_ans === id).map(item => {
-
-        return {
-          id: item.id_plano,
-          value: item.nome_plano
-        }
-
-      })
+      return response
 
     })
 
-  }
-
-  setAtendimento = async (id) => {
-
-    // const convenios = await axios.get('https://api-portoseg.sensedia.com/quotation/v1/itens', (response) => {
-
-    //   return response
-
-    // })
+    // console.log(planos.data)
 
     this.setState({
-      atendimento: atendimentoJSON.filter(item => item.cd_plano === id).map(item => {
+      plano: planos.data
+                // .filter(item => item.nomePlano === 'Bradesco Saúde Hospitalar Nacional  2 E CE B')
+                .map(item => {
 
         return {
-
-          id: item.cd_cnpj_estb_saude,
-          value: item.nm_estabelecimento_saude,
-
+          id: item.cdPlano,
+          value: item.nomePlano
         }
 
-      })
+      }),
+      registroANS: id
 
     })
 
@@ -142,46 +103,50 @@ class App extends React.Component {
 
   setEstabelecimento = async (id) => {
 
-    const cd_plano = atendimentoJSON.filter(item => item.cd_cnpj_estb_saude === id)[0].cd_plano
+    const estabelecimento = await axios.get(`https://medicoradas-api.herokuapp.com/estabelecimento/${this.state.registroANS}/${id}`, (response) => {
 
-    const map_entries = mapEntriesJSON.filter(item => item.cd_plano === cd_plano)
+      return response
 
-    let newViewport = this.state.viewport
-
-    newViewport.latitude = map_entries[0].latitude
-    newViewport.longitude = map_entries[0].longitude
-    newViewport.zoom = 10
+    })
 
     this.setState({
-      pointers: map_entries,
-      viewport: newViewport,
-      results: map_entries.map(item => ({
+      atendimento: estabelecimento.data.map(item => {        
+        return {          
+          id: item.cnpj,
+          value: item.nome,          
+        }        
+      }),
+      pointers: estabelecimento.data.map(item => {
 
-        id: item.latitude + ' - ' + item.longitude,
-        value: item.latitude + ' - ' + item.longitude
+        return {
+          id: item.cnpj,
+          latitude: item.latitude === null ? 0 : Number(item.latitude),
+          longitude: item.longitude === null ? 0 :  Number(item.longitude)
+        }
 
-      }))
-     })
+      })
+      
+    })
+
+    this.setCoordinates(this.state.pointers[0].latitude, this.state.pointers[0].longitude, 5)
 
   }
 
-  setCoordinates = async (id) => {
+  setCoordinates = async (lat,long, zoom = 15) => {
 
-    const coordinates = id.split(' - ')
+    let newViewport = this.state.viewport
 
-    console.log(coordinates)
+    newViewport.latitude = lat
+    newViewport.longitude = long
+    newViewport.zoom = zoom
 
     this.setState({
 
-      pointers: [
-        {
-          id: 1,
-          latitude: coordinates[0],
-          longitude: coordinates[1],
-        }
-      ]
+      viewport: newViewport
 
     })
+
+
 
   }
 
@@ -221,6 +186,14 @@ class App extends React.Component {
 
     this.setConvenios()
 
+    navigator.geolocation.getCurrentPosition(position => { 
+        
+      const { latitude, longitude } = position.coords
+
+      this.setCoordinates(latitude, longitude)
+
+   })
+
   }
 
   render() {
@@ -239,7 +212,7 @@ class App extends React.Component {
 
             <h1>Busca</h1>
 
-            <Dropdown
+            {/* <Dropdown
               default="Convenio"
               id="convenioList"
               data={this.state.convenio}
@@ -250,28 +223,14 @@ class App extends React.Component {
               default="Plano"
               id="planoList"
               data={this.state.plano}
-              handleSearch={this.setAtendimento}>
-            </Dropdown>
-
-            <Dropdown
-              default="Atendimento"
-              id="atendimentoList"
-              data={this.state.atendimento}
               handleSearch={this.setEstabelecimento}>
-            </Dropdown>
-
-            {/* {!this.state.pointers[0] ? <h4>Finish the search to see the results</h4> :
+            </Dropdown> */}
             
-              <Dropdown
-                default="Todos os resultados"
-                id="resultList"
-                data={this.state.results}
-                handleSearch={this.setCoordinates}>
-              </Dropdown>
-            
-            } */}
+            <SearchForm id="convenioList" data={this.state.convenio} handleSearch={this.setPlano}></SearchForm>
 
-            <button className="btn-sub" onClick={() => this.test()}>Enviar</button>
+            <SearchForm id="planoList" data={this.state.plano} handleSearch={this.setEstabelecimento}></SearchForm>
+
+            <SearchForm id="estabelecimentoList" data={this.state.estabelecimento} handleSearch={this.setEstabelecimento}></SearchForm>
 
             <div className="map-view-button" id="map-view-button">
 
@@ -280,6 +239,7 @@ class App extends React.Component {
               <button className="btn-right" onClick={e => this.mapToggle(e)}>Dark</button>
 
             </div>
+
 
             <p>{this.state.viewport.latitude}</p>
             <p>{this.state.viewport.longitude}</p>
@@ -300,7 +260,7 @@ class App extends React.Component {
 
                 <Marker latitude={item.latitude} longitude={item.longitude} key={item.id}>
 
-                  <button className='marker-button'>
+                  <button className='marker-button' onClick={() => this.setCoordinates(item.latitude, item.longitude)}>
 
                     <FiMapPin className="mapPin"></FiMapPin>
 
