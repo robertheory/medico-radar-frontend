@@ -2,11 +2,22 @@
 
 Projeto para facilitar a localização de medicos levando em consideração o convênio e o plano do paciente, evitando com que o mesmo tenha que baixar aplicativos para isso.
 
+**Aplicação em desenvolvimento**
 
-### Responsavel pela API consumida pela aplicação
+### Tecnologias utilizadas:
+- ReactJS
+- CSS3
+- [React-Map-GL](https://github.com/visgl/react-map-gl#readme)
+
+### Requisitos:
+* Node v12.16.1
+* NPM 6.13.4
+* React 16.13.1
+
+### Responsavel pela API consumida pela aplicação:
 [Luan Féo](https://github.com/luanvsfeo)
 
-### Endpoints
+### Endpoints:
 
 |HTTP| Url                            | Descricao                             |
 |----|-----------------------------------------------| --------------------------------------|
@@ -15,11 +26,7 @@ Projeto para facilitar a localização de medicos levando em consideração o co
 |GET |https://medicoradas-api.herokuapp.com/estabelecimento/{registroAns}/{cdPlano} |  Retorna os estabelecimentos levando em consideração o plano e o convenio|
 
 
-### Tecnologias utilizadas
+### Tecnologias utilizadas:
 - Spring boot
 - JPA/Hibernate
 - Postgresql
-
-
-
-
