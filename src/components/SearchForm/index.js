@@ -22,7 +22,7 @@ export default function SearchForm(props) {
 
         <div className="search-form">
 
-        <input id={props.id} type="text" name="search" id="search" className="search-bar" placeholder="Buscar..." onChange={e => searchItems(e)}/>
+        <input id={props.id} type="text" name="search" className="search-bar" placeholder="Buscar..." onChange={e => searchItems(e)}/>
 
         {data.map(item => (
 

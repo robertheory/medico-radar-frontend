@@ -4,7 +4,6 @@ import { FiMenu, FiX, FiMapPin } from 'react-icons/fi'
 import ReactMapGL, { Marker } from 'react-map-gl'
 import mapConfig from './config/map.json'
 
-import Dropdown from './components/Dropdown'
 import SearchForm from './components/SearchForm'
 
 import './global.css'
@@ -37,7 +36,7 @@ class App extends React.Component {
       width: "100%",
       height: "100%",
       zoom: 15,
-      mapboxApiAccessToken: mapConfig.mapToken     
+      mapboxApiAccessToken: mapConfig.mapToken
 
     },
     mapStyleMode: lightStyle,
@@ -82,19 +81,17 @@ class App extends React.Component {
 
     })
 
-    // console.log(planos.data)
-
     this.setState({
       plano: planos.data
-                // .filter(item => item.nomePlano === 'Bradesco Saúde Hospitalar Nacional  2 E CE B')
-                .map(item => {
+        // .filter(item => item.nomePlano === 'Bradesco Saúde Hospitalar Nacional  2 E CE B')
+        .map(item => {
 
-        return {
-          id: item.cdPlano,
-          value: item.nomePlano
-        }
+          return {
+            id: item.cdPlano,
+            value: item.nomePlano
+          }
 
-      }),
+        }),
       registroANS: id
 
     })
@@ -103,36 +100,41 @@ class App extends React.Component {
 
   setEstabelecimento = async (id) => {
 
-    const estabelecimento = await axios.get(`https://medicoradas-api.herokuapp.com/estabelecimento/${this.state.registroANS}/${id}`, (response) => {
+    const estabelecimentos = await axios.get(`https://medicoradas-api.herokuapp.com/estabelecimento/${this.state.registroANS}/${id}`, (response) => {
 
       return response
 
     })
 
+    const filteredEstabelecimentos = estabelecimentos.data.filter(item => item.latitude !== null && item.longitude !== null)
+
     this.setState({
-      atendimento: estabelecimento.data.map(item => {        
-        return {          
+      estabelecimento: filteredEstabelecimentos.map(item => {
+        return {
           id: item.cnpj,
-          value: item.nome,          
-        }        
+          value: item.nome,
+        }
       }),
-      pointers: estabelecimento.data.map(item => {
+      pointers: filteredEstabelecimentos.map(item => {
 
         return {
           id: item.cnpj,
           latitude: item.latitude === null ? 0 : Number(item.latitude),
-          longitude: item.longitude === null ? 0 :  Number(item.longitude)
+          longitude: item.longitude === null ? 0 : Number(item.longitude)
         }
 
       })
-      
+
     })
 
-    this.setCoordinates(this.state.pointers[0].latitude, this.state.pointers[0].longitude, 5)
+    const validLatitude = filteredEstabelecimentos[0] !== undefined ? filteredEstabelecimentos[0].latitude : this.state.viewport.latitude
+    const validLongitude = filteredEstabelecimentos[0] !== undefined ? filteredEstabelecimentos[0].longitude : this.state.viewport.longitude
+
+    this.setCoordinates(Number(validLatitude), Number(validLongitude), 5)
 
   }
 
-  setCoordinates = async (lat,long, zoom = 15) => {
+  setCoordinates = async (lat, long, zoom = 15) => {
 
     let newViewport = this.state.viewport
 
@@ -146,7 +148,13 @@ class App extends React.Component {
 
     })
 
+  }
 
+  setCoordinateById = (id) => {
+
+    const { latitude, longitude } = this.state.pointers.filter(item => item.id === id)[0]
+
+    this.setCoordinates(latitude, longitude)
 
   }
 
@@ -186,13 +194,13 @@ class App extends React.Component {
 
     this.setConvenios()
 
-    navigator.geolocation.getCurrentPosition(position => { 
-        
+    navigator.geolocation.getCurrentPosition(position => {
+
       const { latitude, longitude } = position.coords
 
       this.setCoordinates(latitude, longitude)
 
-   })
+    })
 
   }
 
@@ -211,26 +219,52 @@ class App extends React.Component {
             <FiX className="menu-icon" onClick={() => menuToggle()}></FiX>
 
             <h1>Busca</h1>
-
-            {/* <Dropdown
-              default="Convenio"
-              id="convenioList"
-              data={this.state.convenio}
-              handleSearch={this.setPlano}>
-            </Dropdown>
-
-            <Dropdown
-              default="Plano"
-              id="planoList"
-              data={this.state.plano}
-              handleSearch={this.setEstabelecimento}>
-            </Dropdown> */}
             
-            <SearchForm id="convenioList" data={this.state.convenio} handleSearch={this.setPlano}></SearchForm>
+            <div className="accordion" id="accordionExample">
+              <div className="card">
+                <div className="card-header" id="headingOne">
+                  <h2 className="mb-0">
+                    <button className="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      Convenios
+                    </button>
+                  </h2>
+                </div>
 
-            <SearchForm id="planoList" data={this.state.plano} handleSearch={this.setEstabelecimento}></SearchForm>
-
-            <SearchForm id="estabelecimentoList" data={this.state.estabelecimento} handleSearch={this.setEstabelecimento}></SearchForm>
+                <div id="collapseOne" className="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                  <div className="card-body">
+                  <SearchForm id="convenioList" data={this.state.convenio} handleSearch={this.setPlano}></SearchForm>
+                  </div>
+                </div>
+              </div>
+              <div className="card">
+                <div className="card-header" id="headingTwo">
+                  <h2 className="mb-0">
+                    <button className="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                      Planos
+                    </button>
+                  </h2>
+                </div>
+                <div id="collapseTwo" className="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                  <div className="card-body">
+                  <SearchForm id="planoList" data={this.state.plano} handleSearch={this.setEstabelecimento}></SearchForm>
+                  </div>
+                </div>
+              </div>
+              <div className="card">
+                <div className="card-header" id="headingThree">
+                  <h2 className="mb-0">
+                    <button className="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                      Estabelecimentos
+                    </button>
+                  </h2>
+                </div>
+                <div id="collapseThree" className="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                  <div className="card-body">
+                    <SearchForm id="estabelecimentoList" data={this.state.estabelecimento} handleSearch={this.setCoordinateById}></SearchForm>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <div className="map-view-button" id="map-view-button">
 
@@ -271,7 +305,7 @@ class App extends React.Component {
               ))}
 
             </ReactMapGL>
-            
+
           </div>
 
         </div>

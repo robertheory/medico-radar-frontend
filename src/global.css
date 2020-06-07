@@ -161,7 +161,6 @@ html, body{
 
 .search-form{
 
-    background-color: #23395e;
     height: 250px;
     width: 100%;
     padding: 5px;
@@ -197,6 +196,24 @@ html, body{
     overflow: hidden;
     padding: 0px;
     margin: 0px;
+
+}
+
+.accordion {
+
+    width: 100%;
+
+}
+
+.card-header {
+
+    padding: 0px;
+
+}
+
+.card-header h2 {
+
+    text-align: center;
 
 }
 
