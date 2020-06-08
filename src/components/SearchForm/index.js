@@ -10,7 +10,7 @@ export default function SearchForm(props) {
 
     }, [props.data])
 
-    function searchItems(e){
+    function searchItems(e) {
 
         const searchText = e.target.value
 
@@ -22,19 +22,27 @@ export default function SearchForm(props) {
 
         <div className="search-form">
 
-        <input id={props.id} type="text" name="search" className="search-bar" placeholder="Buscar..." onChange={e => searchItems(e)}/>
+            <h2>{props.name}</h2>
 
-        {data.map(item => (
+            <input id={props.id} type="text" name="search" className="search-bar" placeholder="Buscar..." onChange={e => searchItems(e)} />
 
-            <button className="search-item" key={item.id} onClick={() => props.handleSearch(item.id)}>
-                <p>
-                    {item.value}
-                </p>
-            </button>
+            {data.map(item => (
 
-        ))}
+                <button
+                    className="search-item"
+                    key={item.id}
+                    onClick={
+                        () => props.handleSearch(item.id, props.open || '')
+                    }
+                >
+                    <p>
+                        {item.value}
+                    </p>
+                </button>
 
-      </div>
+            ))}
+
+        </div>
 
     );
 };

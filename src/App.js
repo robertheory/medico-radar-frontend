@@ -1,10 +1,12 @@
 import React from 'react';
 import axios from 'axios';
-import { FiMenu, FiX, FiMapPin } from 'react-icons/fi'
+import { FiMenu, FiX, FiRefreshCcw } from 'react-icons/fi'
+import { FaMapPin } from 'react-icons/fa'
 import ReactMapGL, { Marker } from 'react-map-gl'
 import mapConfig from './config/map.json'
 
 import SearchForm from './components/SearchForm'
+// import AccordionCard from './components/AccordionCard'
 
 import './global.css'
 
@@ -31,8 +33,8 @@ class App extends React.Component {
     plano: [],
     estabelecimento: [],
     viewport: {
-      latitude: 45.4211,
-      longitude: -75.6903,
+      latitude: -23.6319245,
+      longitude: -46.7541027,
       width: "100%",
       height: "100%",
       zoom: 15,
@@ -176,8 +178,6 @@ class App extends React.Component {
 
     e.target.classList.add('active')
 
-    console.log(e.target.innerHTML.toLowerCase() + 'Style')
-
     this.setState({
 
       mapStyleMode: e.target.innerHTML === 'Satelite'
@@ -185,6 +185,17 @@ class App extends React.Component {
         : e.target.innerHTML === 'Dark'
           ? darkStyle
           : lightStyle
+
+    })
+
+  }
+
+  handleCleanSearch() {
+
+    this.setState({
+
+      plano: [],
+      estabelecimento: []
 
     })
 
@@ -218,53 +229,28 @@ class App extends React.Component {
 
             <FiX className="menu-icon" onClick={() => menuToggle()}></FiX>
 
-            <h1>Busca</h1>
-            
-            <div className="accordion" id="accordionExample">
-              <div className="card">
-                <div className="card-header" id="headingOne">
-                  <h2 className="mb-0">
-                    <button className="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                      Convenios
-                    </button>
-                  </h2>
-                </div>
+            <button className="refresh" onClick={() => this.handleCleanSearch()}>
 
-                <div id="collapseOne" className="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-                  <div className="card-body">
-                  <SearchForm id="convenioList" data={this.state.convenio} handleSearch={this.setPlano}></SearchForm>
-                  </div>
-                </div>
-              </div>
-              <div className="card">
-                <div className="card-header" id="headingTwo">
-                  <h2 className="mb-0">
-                    <button className="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                      Planos
-                    </button>
-                  </h2>
-                </div>
-                <div id="collapseTwo" className="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-                  <div className="card-body">
-                  <SearchForm id="planoList" data={this.state.plano} handleSearch={this.setEstabelecimento}></SearchForm>
-                  </div>
-                </div>
-              </div>
-              <div className="card">
-                <div className="card-header" id="headingThree">
-                  <h2 className="mb-0">
-                    <button className="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                      Estabelecimentos
-                    </button>
-                  </h2>
-                </div>
-                <div id="collapseThree" className="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
-                  <div className="card-body">
-                    <SearchForm id="estabelecimentoList" data={this.state.estabelecimento} handleSearch={this.setCoordinateById}></SearchForm>
-                  </div>
-                </div>
-              </div>
-            </div>
+              <FiRefreshCcw></FiRefreshCcw>
+
+              Limpar
+
+            </button>
+
+            {this.state.plano[0] === undefined && this.state.estabelecimento[0] === undefined
+              ? <SearchForm name="Convenios" id="convenioList" data={this.state.convenio} handleSearch={this.setPlano} />
+              : ''
+            }
+
+
+            {this.state.plano[0] !== undefined && this.state.estabelecimento[0] === undefined
+              ? <SearchForm name="Planos" id="planoList" data={this.state.plano} handleSearch={this.setEstabelecimento} />
+              : ''
+            }
+
+            {this.state.estabelecimento[0] !== undefined &&
+              <SearchForm name="Estabelecimentos" id="estabelecimentoList" data={this.state.estabelecimento} handleSearch={this.setCoordinateById}></SearchForm>
+            }
 
             <div className="map-view-button" id="map-view-button">
 
@@ -273,10 +259,6 @@ class App extends React.Component {
               <button className="btn-right" onClick={e => this.mapToggle(e)}>Dark</button>
 
             </div>
-
-
-            <p>{this.state.viewport.latitude}</p>
-            <p>{this.state.viewport.longitude}</p>
 
           </div>
 
@@ -296,7 +278,7 @@ class App extends React.Component {
 
                   <button className='marker-button' onClick={() => this.setCoordinates(item.latitude, item.longitude)}>
 
-                    <FiMapPin className="mapPin"></FiMapPin>
+                    <FaMapPin className="mapPin"></FaMapPin>
 
                   </button>
 
@@ -308,7 +290,7 @@ class App extends React.Component {
 
           </div>
 
-        </div>
+        </div >
 
     )
 
