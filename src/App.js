@@ -6,9 +6,8 @@ import ReactMapGL, { Marker } from 'react-map-gl'
 import mapConfig from './config/map.json'
 
 import SearchForm from './components/SearchForm'
-// import AccordionCard from './components/AccordionCard'
 
-import './global.css'
+import './css/global.css'
 
 const sateliteStyle = "mapbox://styles/doravantebeto/ckan9j9bz0omy1ipdb6b1oizn"
 const darkStyle = "mapbox://styles/doravantebeto/ckan9ggs7124u1iqlreo3hoe5"
@@ -276,9 +275,10 @@ class App extends React.Component {
 
                 <Marker latitude={item.latitude} longitude={item.longitude} key={item.id}>
 
+
                   <button className='marker-button' onClick={() => this.setCoordinates(item.latitude, item.longitude)}>
 
-                    <FaMapPin className="mapPin"></FaMapPin>
+                    <FaMapPin className="mapPin" />
 
                   </button>
 

@@ -4,8 +4,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-x: hidden;
-  overflow-y: hidden;
+  overflow: hidden;
   margin: 0px;
   padding: 0px;
 }
@@ -171,6 +170,11 @@ body {
   font-weight: 700;
   border: 1px ridge #ff6c6c;
   margin: 20px;
+}
+
+#mapid {
+  width: 100vw;
+  height: 100vh;
 }
 
 @media (min-width: 768px) {
