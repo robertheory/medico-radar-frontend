@@ -1,0 +1,23 @@
+$theme: 3;
+
+$c1: white;
+$c2: #3f3f3f;
+$c3: #292929;
+$c4: #8c8c8c;
+$c5: #cccccc;
+
+@if $theme == 2 {
+    $c1: rgb(182, 182, 182);
+    $c2: #ffffff;
+    $c3: #000000;
+    $c4: #8c8c8c;
+    $c5: #939393;
+}
+
+@if $theme == 3 {
+    $c1: rgb(47, 47, 47);
+    $c2: #ffffff;
+    $c3: #ffffff;
+    $c4: #7d7d7d;
+    $c5: #4e4e4e;
+}

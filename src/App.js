@@ -15,9 +15,7 @@ const lightStyle = "mapbox://styles/doravantebeto/ckan9i4oj2i4l1ipg0y55068l"
 
 function menuToggle() {
 
-  [...document.getElementsByClassName('menu-icon')].map(item => item.classList.toggle('hidden')
-
-  )
+  [...document.getElementsByClassName('menu-icon')].map(item => item.classList.toggle('hidden'))
 
   document.getElementById('search-area').classList.toggle('hidden')
 
@@ -109,11 +107,17 @@ class App extends React.Component {
 
     const filteredEstabelecimentos = estabelecimentos.data.filter(item => item.latitude !== null && item.longitude !== null)
 
+    console.log(filteredEstabelecimentos)
+
     this.setState({
       estabelecimento: filteredEstabelecimentos.map(item => {
         return {
           id: item.cnpj,
           value: item.nome,
+          bairro: item.bairro,
+          logradouro: item.logradouro,
+          municipio: item.municipio,
+          telefone: item.telefone
         }
       }),
       pointers: filteredEstabelecimentos.map(item => {
@@ -127,6 +131,8 @@ class App extends React.Component {
       })
 
     })
+
+    menuToggle()
 
     const validLatitude = filteredEstabelecimentos[0] !== undefined ? filteredEstabelecimentos[0].latitude : this.state.viewport.latitude
     const validLongitude = filteredEstabelecimentos[0] !== undefined ? filteredEstabelecimentos[0].longitude : this.state.viewport.longitude
@@ -194,7 +200,16 @@ class App extends React.Component {
     this.setState({
 
       plano: [],
-      estabelecimento: []
+      estabelecimento: [],
+      pointers: []
+
+    })
+
+    navigator.geolocation.getCurrentPosition(position => {
+
+      const { latitude, longitude } = position.coords
+
+      this.setCoordinates(latitude, longitude)
 
     })
 
@@ -273,14 +288,24 @@ class App extends React.Component {
 
               {this.state.pointers.map(item => (
 
-                <Marker latitude={item.latitude} longitude={item.longitude} key={item.id}>
+                <Marker
+                  className="marker"
+                  latitude={item.latitude}
+                  longitude={item.longitude}
+                  key={item.id}
+                >
 
+                  {this.state.estabelecimento.filter(estab => estab.id === item.id).map(info => (
+                    <ul>
+                      <li>{info.value}</li>
+                      {this.state.viewport.zoom > 6 && <li> <hr /> {info.municipio}</li>}
+                      {this.state.viewport.zoom > 6 && <li> <hr /> {info.logradouro}</li>}
+                      {this.state.viewport.zoom > 8 && <li> <hr /> {info.bairro}</li>}
+                      {this.state.viewport.zoom > 8 && <li> <hr /> {info.telefone}</li>}
+                    </ul>
+                  ))}
 
-                  <button className='marker-button' onClick={() => this.setCoordinates(item.latitude, item.longitude)}>
-
-                    <FaMapPin className="mapPin" />
-
-                  </button>
+                  <FaMapPin className="mapPin" onClick={() => this.setCoordinates(item.latitude, item.longitude)} />
 
                 </Marker>
 
