@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { FiMenu, FiX, FiRefreshCcw } from 'react-icons/fi'
+import { FiMenu, FiX, FiRefreshCcw, FiAlertTriangle } from 'react-icons/fi'
 import { FaMapPin } from 'react-icons/fa'
 import ReactMapGL, { Marker } from 'react-map-gl'
 import mapConfig from './config/map.json'
@@ -273,6 +273,15 @@ class App extends React.Component {
               <button className="btn-right" onClick={e => this.mapToggle(e)}>Dark</button>
 
             </div>
+
+            <a href="https://github.com/doravantebeto/medico-radar-frontend/issues">
+
+              <FiAlertTriangle></FiAlertTriangle>
+
+              <p>
+                Encontrou algum Bug? Ajude entrando em contato!
+              </p>
+            </a>
 
           </div>
 

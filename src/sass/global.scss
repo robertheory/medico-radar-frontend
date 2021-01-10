@@ -41,13 +41,38 @@ body {
   top: 0px;
   z-index: 10;
   transition: display 2s linear;
+  a {
+    text-decoration: none;
+    color: white;
+    font-size: 0.8rem;
+    font-family: RobotoThin;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 10px;
+    justify-content: center;
+    align-items: flex-end;
+    p {
+      padding: 5px;
+    }
+    &:link {
+      color: white;
+    }
+    &:visited {
+      color: white;
+    }
+    &:active {
+      color: white;
+    }
+  }
 }
 
 .menu-icon {
   font-size: 3rem;
   position: absolute;
   top: 10px;
-  right: 10px;
+  right: 5px;
   z-index: 20;
   background-color: $c1;
   border-radius: 5px;
